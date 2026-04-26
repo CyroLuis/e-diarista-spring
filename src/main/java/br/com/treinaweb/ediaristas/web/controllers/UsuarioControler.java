@@ -1,11 +1,15 @@
 package br.com.treinaweb.ediaristas.web.controllers;
 
+import br.com.treinaweb.ediaristas.web.dtos.FlashMessage;
+import br.com.treinaweb.ediaristas.web.dtos.UsuarioDto;
 import br.com.treinaweb.ediaristas.web.services.WebUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/admin/usuarios")
@@ -20,5 +24,33 @@ public class UsuarioControler {
         
         modelAndView.addObject("usuarios",service.buscarTodos());
         return modelAndView;
+    }
+    @GetMapping("/cadastrar")
+    public ModelAndView cadastrar (){
+        var modelAndView = new ModelAndView("admin/usuarios/cadastro-form");
+
+        modelAndView.addObject("cadastroForm", new UsuarioDto());
+
+        return modelAndView;
+    }
+
+    @PostMapping("/cadastrar")
+    public String cadastrar(@Valid @ModelAttribute("cadastroForm") UsuarioDto cadastroForm,
+                                     BindingResult result,
+                                     RedirectAttributes attrs
+    ){
+        if (result.hasErrors()) {
+            return "admin/usuarios/cadastro-form";
+        }
+            service.cadastro(cadastroForm);
+        attrs.addFlashAttribute("alert", new FlashMessage("alert-success","Usuário cadastrado com sucesso!"));
+
+           return"redirect:/admin/usuarios";
+    }
+    @GetMapping("/{id}/excluir")
+    public String excluir(@PathVariable Long id, RedirectAttributes attrs){
+        service.excluirPorId(id);
+        attrs.addFlashAttribute("alert",new FlashMessage("alert-success","Usuario excluido com sucesso"));
+                return "redirect:/admin/usuarios";
     }
 }

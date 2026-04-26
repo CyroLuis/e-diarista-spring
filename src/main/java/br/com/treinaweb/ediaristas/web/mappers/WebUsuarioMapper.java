@@ -5,7 +5,7 @@ import br.com.treinaweb.ediaristas.web.dtos.UsuarioDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel="spring")
 public interface WebUsuarioMapper {
     WebUsuarioMapper INSTANCE = Mappers.getMapper(WebUsuarioMapper.class);
 
